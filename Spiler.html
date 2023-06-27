@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -36,13 +35,10 @@
   <label for="trellisWidth">Trellis Width (mm):</label>
   <input type="number" id="trellisWidth" placeholder="Enter trellis width">
   
-  <label for="trellisHeight">Trellis Height (mm):</label>
-  <input type="number" id="trellisHeight" placeholder="Enter trellis height">
-  
-  <label for="availableSpace">Available Space (cm):</label>
+  <label for="availableSpace">Available Space (mm):</label>
   <input type="number" id="availableSpace" placeholder="Enter available space">
   
-  <label for="desiredSpacing">Desired Spacing (cm):</label>
+  <label for="desiredSpacing">Desired Spacing (mm):</label>
   <input type="number" id="desiredSpacing" placeholder="Enter desired spacing">
   
   <button onclick="calculateTrellisSpacing()">Calculate</button>
@@ -52,22 +48,4 @@
   <script>
     function calculateTrellisSpacing() {
       // Get input values from the user
-      const trellisWidth = Number(document.getElementById('trellisWidth').value);
-      const trellisHeight = Number(document.getElementById('trellisHeight').value);
-      const availableSpace = Number(document.getElementById('availableSpace').value);
-      const desiredSpacing = Number(document.getElementById('desiredSpacing').value);
-      
-      // Perform the calculations
-      const trellisSpacing = availableSpace - trellisWidth;
-      const numberOfTrellises = Math.floor(trellisSpacing / (trellisWidth + desiredSpacing)) + 1;
-      
-      // Display the results
-      const output = document.getElementById('output');
-      output.innerHTML = `
-        <p>Trellis Spacing: ${trellisSpacing} mm</p>
-        <p>Number of Trellises: ${numberOfTrellises}</p>
-      `;
-    }
-  </script>
-</body>
-</html>
+      const trellisWidth = Number(document
