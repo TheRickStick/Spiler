@@ -8,16 +8,21 @@
       padding: 20px;
     }
     
-    label {
+    label, button {
       display: block;
       margin-bottom: 10px;
     }
     
     input[type="number"] {
-      width: 400px;
-      padding: 10px;
+      width: 100%;
+      padding: 5px;
       margin-bottom: 10px;
-      font-size: 1.5em;
+    }
+
+    .output {
+      border: 1px solid #000;
+      padding: 20px;
+      margin-top: 20px;
     }
     
     button {
@@ -26,31 +31,12 @@
       color: white;
       border: none;
       cursor: pointer;
-      font-size: 1.5em;
     }
 
-    .output {
-      margin-top: 20px;
-      border: 1px solid #333;
+    .box {
+      border: 1px solid #000;
       padding: 20px;
-      background-color: #f9f9f9;
-    }
-    
-    .output p {
-      margin: 0;
-      padding: 20px 0;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .output p:last-child {
-      border-bottom: none;
-    }
-
-    .output-box {
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
-      background-color: #fff;
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -64,16 +50,16 @@
     <label for="availableSpace">Available Space (mm):</label>
     <input type="number" id="availableSpace" min="1" required placeholder="Enter available space">
 
-    <label for="desiredSpacing">Desired Spacing (mm) (Optional):</label>
+    <label for="desiredSpacing">Desired Spacing (mm):</label>
     <input type="number" id="desiredSpacing" min="0" placeholder="Enter desired spacing">
 
-    <label for="desiredLouvers">Desired Number of Louvers (Optional):</label>
-    <input type="number" id="desiredLouvers" min="1" placeholder="Enter number of louvers">
-  
+    <label for="desiredLouvers">Desired Number of Louvers:</label>
+    <input type="number" id="desiredLouvers" min="0" placeholder="Enter desired number of louvers">
+
     <button type="submit">Kalkuler</button>
   </form>
   
-  <div id="output" class="output"></div>
+  <div id="output"></div>
   
   <script>
     document.getElementById('calculatorForm').addEventListener('submit', function(event) {
@@ -86,51 +72,74 @@
       const desiredSpacing = Number(document.getElementById('desiredSpacing').value);
       const desiredLouvers = Number(document.getElementById('desiredLouvers').value);
 
-      let gap;
-      let numberOfLouvers;
+      // Validate inputs
+      if (isNaN(louverWidth) || isNaN(availableSpace) || isNaN(desiredSpacing) || isNaN(desiredLouvers)) {
+        alert("Please enter valid numbers for all fields.");
+        return;
+      }
+      if (louverWidth <= 0 || availableSpace <= 0) {
+        alert("Louver width and available space must be greater than zero.");
+        return;
+      }
+      if (desiredSpacing < 0 || desiredLouvers < 0) {
+        alert("Desired spacing and number of louvers must be zero or greater.");
+        return;
+      }
+      if (desiredSpacing > availableSpace) {
+        alert("Desired spacing must be less than available space.");
+        return;
+      }
+      if (desiredLouvers > 0 && (louverWidth * desiredLouvers) > availableSpace) {
+        alert("The specified number of louvers cannot fit in the available space.");
+        return;
+      }
 
+      // Minimum acceptable spacing (in mm)
+      const minimumSpacing = 5;
+
+      // Additional validation for minimum spacing
+      if (desiredLouvers > 0 && ((availableSpace - (louverWidth * desiredLouvers)) / (desiredLouvers + 1)) < minimumSpacing) {
+        let suggestedLouvers = Math.floor((availableSpace - (minimumSpacing * (desiredLouvers + 1))) / louverWidth);
+        alert(`With the desired number of louvers and minimum spacing of ${minimumSpacing} mm, the louvers cannot fit in the available space. Try using ${suggestedLouvers} louvers instead.`);
+        return;
+      }
+
+        // Calculate number of louvers and actual spacing
+      let numberOfLouvers, actualSpacing;
       if (desiredSpacing > 0) {
-        // If user specifies desired spacing
-        numberOfLouvers = Math.floor((availableSpace + desiredSpacing) / (louverWidth + desiredSpacing));
-        gap = (availableSpace - (numberOfLouvers * louverWidth)) / (numberOfLouvers + 1);
+        numberOfLouvers = Math.floor(availableSpace / (louverWidth + desiredSpacing));
+        actualSpacing = (availableSpace - (numberOfLouvers * louverWidth)) / (numberOfLouvers + 1);
       } else if (desiredLouvers > 0) {
-        // If user specifies desired number of louvers
         numberOfLouvers = desiredLouvers;
-        gap = (availableSpace - (numberOfLouvers * louverWidth)) / (numberOfLouvers + 1);
+        actualSpacing = (availableSpace - (numberOfLouvers * louverWidth)) / (numberOfLouvers + 1);
       } else {
-        // If user does not specify either
         numberOfLouvers = Math.floor(availableSpace / louverWidth);
-        gap = (availableSpace - (numberOfLouvers * louverWidth)) / (numberOfLouvers + 1);
+        actualSpacing = (availableSpace - (numberOfLouvers * louverWidth)) / (numberOfLouvers + 1);
       }
 
-      let position = gap + louverWidth;
-      let positionsMM = [];
-      let positionsCM = [];
+      // Calculate positions for drawing the line
+      let position = actualSpacing + louverWidth;
+      let positions = [];
       for (let i = 0; i < numberOfLouvers; i++) {
-        positionsMM.push(position.toFixed(2));
-        positionsCM.push((position / 10).toFixed(2));
-        position += gap + louverWidth;
+        positions.push(position);
+        position += actualSpacing + louverWidth;
       }
-      
-      // Display the results
-      const output = document.getElementById('output');
-      output.innerHTML = `
-        <div class="output-box">
-          <h2>Results (mm)</h2>
-          <p>Antall Spile: ${numberOfLouvers}</p>
-          <p>Ønsket mellomrom: ${desiredSpacing > 0 ? desiredSpacing : "Ikke spesifisert"} mm</p>
-          <p>Reelt mellomrom: ${gap.toFixed(2)} mm</p>
-          <p>Spile Posisjoner: ${positionsMM.join(", ")}</p>
+
+      // Display results
+      const outputDiv = document.getElementById('output');
+      outputDiv.innerHTML = `<h2>Resultater:</h2>
+        <div class="box">
+          <strong>Antall spiler:</strong> ${numberOfLouvers}<br/>
+          <strong>Faktisk avstand (mm):</strong> ${actualSpacing.toFixed(2)}<br/>
+          <strong>Faktisk avstand (cm):</strong> ${(actualSpacing / 10).toFixed(2)}
         </div>
-        <div class="output-box">
-          <h2>Results (cm)</h2>
-          <p>Antall Spile: ${numberOfLouvers}</p>
-          <p>Ønsket mellomrom: ${desiredSpacing > 0 ? (desiredSpacing / 10).toFixed(2) : "Ikke spesifisert"} cm</p>
-          <p>Reelt mellomrom: ${(gap / 10).toFixed(2)} cm</p>
-          <p>Spile Posisjoner: ${positionsCM.join(", ")}</p>
-        </div>
-      `;
+        <div class="box">
+          <strong>Linjeposisjoner (mm):</strong> ${positions.map(pos => pos.toFixed(2)).join(', ')}<br/>
+          <strong>Linjeposisjoner (cm):</strong> ${positions.map(pos => (pos / 10).toFixed(2)).join(', ')}
+        </div>`;
     });
   </script>
 </body>
 </html>
+
+        
