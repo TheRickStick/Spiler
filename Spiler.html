@@ -14,9 +14,10 @@
     }
     
     input[type="number"] {
-      width: 200px;
-      padding: 5px;
+      width: 400px;
+      padding: 10px;
       margin-bottom: 10px;
+      font-size: 1.5em;
     }
     
     button {
@@ -25,23 +26,31 @@
       color: white;
       border: none;
       cursor: pointer;
+      font-size: 1.5em;
     }
 
     .output {
       margin-top: 20px;
       border: 1px solid #333;
-      padding: 10px;
+      padding: 20px;
       background-color: #f9f9f9;
     }
     
     .output p {
       margin: 0;
-      padding: 10px 0;
+      padding: 20px 0;
       border-bottom: 1px solid #ddd;
     }
 
     .output p:last-child {
       border-bottom: none;
+    }
+
+    .output-box {
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      background-color: #fff;
     }
   </style>
 </head>
@@ -95,19 +104,31 @@
       }
 
       let position = gap;
-      let positions = [];
+      let positionsMM = [];
+      let positionsCM = [];
       for (let i = 0; i < numberOfLouvers; i++) {
-        positions.push(position.toFixed(2));
+        positionsMM.push(position.toFixed(2));
+        positionsCM.push((position / 10).toFixed(2));
         position += gap + louverWidth;
       }
       
       // Display the results
       const output = document.getElementById('output');
       output.innerHTML = `
-        <p>Antall Spile: ${numberOfLouvers}</p>
-        <p>Ønsket mellomrom: ${desiredSpacing > 0 ? desiredSpacing : "Ikke spesifisert"} mm</p>
-        <p>Reelt mellomrom: ${gap.toFixed(2)} mm (${(gap / 10).toFixed(2)} cm)</p>
-        <p>Spile Posisjoner (mm): ${positions.join(", ")} (cm: ${(positions.map(p => (p / 10).toFixed(2))).join(", ")})</p>
+        <div class="output-box">
+          <h2>Results (mm)</h2>
+          <p>Antall Spile: ${numberOfLouvers}</p>
+          <p>Ønsket mellomrom: ${desiredSpacing > 0 ? desiredSpacing : "Ikke spesifisert"} mm</p>
+          <p>Reelt mellomrom: ${gap.toFixed(2)} mm</p>
+          <p>Spile Posisjoner: ${positionsMM.join(", ")}</p>
+        </div>
+        <div class="output-box">
+          <h2>Results (cm)</h2>
+          <p>Antall Spile: ${numberOfLouvers}</p>
+          <p>Ønsket mellomrom: ${desiredSpacing > 0 ? (desiredSpacing / 10).toFixed(2) : "Ikke spesifisert"} cm</p>
+          <p>Reelt mellomrom: ${(gap / 10).toFixed(2)} cm</p>
+          <p>Spile Posisjoner: ${positionsCM.join(", ")}</p>
+        </div>
       `;
     });
   </script>
