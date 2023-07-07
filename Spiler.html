@@ -58,8 +58,8 @@
   <h1>Spile Kalkulator</h1>
   
   <form id="calculatorForm">
-    <label for="trellisWidth">Spile bredde (mm):</label>
-    <input type="number" id="trellisWidth" min="1" required placeholder="Enter louver width">
+    <label for="louverWidth">Spile bredde (mm):</label>
+    <input type="number" id="louverWidth" min="1" required placeholder="Enter louver width">
   
     <label for="availableSpace">Available Space (mm):</label>
     <input type="number" id="availableSpace" min="1" required placeholder="Enter available space">
@@ -81,7 +81,7 @@
       event.preventDefault();
 
       // Get input values from the user
-      const louverWidth = Number(document.getElementById('trellisWidth').value);
+      const louverWidth = Number(document.getElementById('louverWidth').value);
       const availableSpace = Number(document.getElementById('availableSpace').value);
       const desiredSpacing = Number(document.getElementById('desiredSpacing').value);
       const desiredLouvers = Number(document.getElementById('desiredLouvers').value);
@@ -103,7 +103,7 @@
         gap = (availableSpace - (numberOfLouvers * louverWidth)) / (numberOfLouvers + 1);
       }
 
-      let position = gap;
+      let position = gap + louverWidth;
       let positionsMM = [];
       let positionsCM = [];
       for (let i = 0; i < numberOfLouvers; i++) {
