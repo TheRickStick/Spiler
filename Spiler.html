@@ -26,6 +26,23 @@
       border: none;
       cursor: pointer;
     }
+
+    .output {
+      margin-top: 20px;
+      border: 1px solid #333;
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    
+    .output p {
+      margin: 0;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .output p:last-child {
+      border-bottom: none;
+    }
   </style>
 </head>
 <body>
@@ -47,7 +64,7 @@
     <button type="submit">Kalkuler</button>
   </form>
   
-  <div id="output"></div>
+  <div id="output" class="output"></div>
   
   <script>
     document.getElementById('calculatorForm').addEventListener('submit', function(event) {
@@ -87,9 +104,10 @@
       // Display the results
       const output = document.getElementById('output');
       output.innerHTML = `
-        <p>Gap: ${gap.toFixed(2)} mm (${(gap / 10).toFixed(2)} cm)</p>
-        <p>Number of Louvers: ${numberOfLouvers}</p>
-        <p>Louver Positions (mm): ${positions.join(", ")} (cm: ${(positions.map(p => (p / 10).toFixed(2))).join(", ")})</p>
+        <p>Antall Spile: ${numberOfLouvers}</p>
+        <p>Ønsket mellomrom: ${desiredSpacing > 0 ? desiredSpacing : "Ikke spesifisert"} mm</p>
+        <p>Reelt mellomrom: ${gap.toFixed(2)} mm (${(gap / 10).toFixed(2)} cm)</p>
+        <p>Spile Posisjoner (mm): ${positions.join(", ")} (cm: ${(positions.map(p => (p / 10).toFixed(2))).join(", ")})</p>
       `;
     });
   </script>
